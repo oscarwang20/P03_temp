@@ -16,16 +16,17 @@ const canvas = document.querySelector('#canvas');
 // Context for the canvas for 2 dimensional operations
 const ctx = canvas.getContext('2d');
 
-var frame;
+var saves = document.getElementById("saves");
+var frames = [];
 var saveBtn = document.getElementById("save");
 var clearBtn = document.getElementById("clear");
 var restoreBtn = document.getElementById("restore");
 var height = canvas.height;
 var width = canvas.width;
+var frameNum = 0;
 
 saveBtn.addEventListener("click", saveDrawing, false);
 clearBtn.addEventListener("click", clear, false);
-restoreBtn.addEventListener("click", restore, false);
 
 
 // Stores the initial position of the cursor
@@ -84,9 +85,13 @@ function sketch(event) {
 
 // stores drawing data in a global variable
 function saveDrawing(e) {
+    frameNum++;
     console.log("save attempted");
-    data = ctx.getImageData(0, 0, width, height);
-    frame = data;
+    frames.concat(ctx.getImageData(0, 0, width, height));
+    var thisFrame = document.createElement("button");
+    thisFrame.innerHTML = "load frame " + frameNum;
+    thisFrame.addEventListener("click", restore(frameNum));
+    saves.appendChild(thisFrame);
 }
 
 // clears the canvas
@@ -96,7 +101,12 @@ function clear(e) {
 }
 
 // restores the drawing using putImageData()
-function restore(e) {
+function restore(i) {
     console.log("restore attempted")
-    ctx.putImageData(frame, 0, 0);
+    ctx.putImageData(frames[i], 0, 0);
+}
+
+var restore = function(i){
+    console.log("restore attempted")
+    ctx.putImageData(frames[i], 0, 0);
 }
